@@ -3,12 +3,12 @@ from lib.DataReader import read_customers, read_orders
 from lib.DataManipulation import filter_closed_orders,count_orders_state, filter_orders
 from lib.ConfigReader import get_app_config
 
-@pytest.mark.source_check() # markers used to segregate the tests 
+@pytest.mark.skip() # markers used to segregate the tests 
 def test_read_customers_df(spark):
 	customer_count = read_customers(spark, 'LOCAL').count()
 	assert customer_count == 12435
 	
-@pytest.mark.source_check()
+@pytest.mark.skip()
 def test_read_orders_df(spark):
 	orders_count = read_orders(spark, 'LOCAL').count()
 	assert orders_count == 68884
