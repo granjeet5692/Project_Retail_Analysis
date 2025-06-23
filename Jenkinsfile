@@ -1,30 +1,37 @@
-pipeline {
+pipeline{
 	agent any
-
-	stages {
+	
+	environment{
+		LABS = credentials('lab_credentials')
+	}
+	
+	stages{
 		stage('Build'){
 			steps{
-				echo "build completed successfully"
+				sh 'pip3 install --user pipenv'
+				sh '/bitnami/jenkins/home/.local/bin/pipenv --rm || exit 0'
+				sh '/bitnami/jenkins/home/.local/bin/pipenv install'
 			}
 		}
-
+		
 		stage('Test'){
 			steps{
-				echo "test completed successfully"
+				sh '/bitnami/jenkins/home/.local/bin/pipenv run pytest'
 			}
 		}
-
+		
 		stage('Package'){
 			steps{
-				echo "package completed successfully"
+				sh 'zip -r retailProject.zip .'
 			}
 		}
-
+		
 		stage('Deploy'){
 			steps{
-				echo "deploy completed successfully"
+				sh 'sshpass -p $LABS_PSW scp -o StrictHostKeyChecking=no -r . $LABS_USR@g01.itversity.com:/home/itv017208/retailProject'
 			}
 		}
-
+	
 	}
+
 }
