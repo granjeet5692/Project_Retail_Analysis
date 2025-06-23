@@ -1,0 +1,37 @@
+pipeline{
+	agent any
+	
+	environment{
+		LABS = credentials('lab_credentials')
+	}
+	
+	stages{
+		stage('Build'){
+			steps{
+				sh 'pipx install pipenv'
+				sh '/bitnami/jenkins/home/.local/bin/pipenv --rm || exit 0'
+				sh '/bitnami/jenkins/home/.local/bin/pipenv install'
+			}
+		}
+		
+		stage('Test'){
+			steps{
+				sh '/bitnami/jenkins/home/.local/bin/pipenv run pytest'
+			}
+		}
+		
+		stage('Package'){
+			steps{
+				sh 'zip -r retailProject.zip .'
+			}
+		}
+		
+		stage('Deploy'){
+			steps{
+				sh 'sshpass -p $LABS_PSW scp -o StrictHostKeyChecking=no -r . $LABS_USR@g01.itversity.com:/home/itv017208/retailProject'
+			}
+		}
+	
+	}
+
+}
